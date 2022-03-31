@@ -20,7 +20,7 @@ custom_camera_params = {
     
     # Dummy camera parameters (taken from Human3.6M), only for visualization purposes
     'azimuth': 70, # Only used for visualization
-    'orientation': [0.1407056450843811, -0.1500701755285263, -0.755240797996521, 0.6223280429840088],
+    'orientation': [0.6157187819480896, -0.764836311340332, -0.14833825826644897, 0.11794740706682205],
     'translation': [1841.1070556640625, 4955.28466796875, 1563.4454345703125],
 }
 

@@ -6,7 +6,7 @@
 #
 
 import matplotlib
-matplotlib.use('Agg')
+matplotlib.use('tkagg')
 
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation, writers
@@ -70,7 +70,7 @@ def render_animation(keypoints, keypoints_metadata, poses, skeleton, fps, bitrat
      -- 'filename.mp4': render and export the animation as an h264 video (requires ffmpeg).
      -- 'filename.gif': render and export the animation a gif file (requires imagemagick).
     """
-    plt.ioff()
+    # plt.ioff()
     fig = plt.figure(figsize=(size*(1 + len(poses)), size))
     ax_in = fig.add_subplot(1, 1 + len(poses), 1)
     ax_in.get_xaxis().set_visible(False)
@@ -84,7 +84,7 @@ def render_animation(keypoints, keypoints_metadata, poses, skeleton, fps, bitrat
     radius = 1.7
     for index, (title, data) in enumerate(poses.items()):
         ax = fig.add_subplot(1, 1 + len(poses), index+2, projection='3d')
-        ax.view_init(elev=15., azim=azim)
+        ax.view_init(elev=5., azim=azim)
         ax.set_xlim3d([-radius/2, radius/2])
         ax.set_zlim3d([0, radius])
         ax.set_ylim3d([-radius/2, radius/2])
@@ -92,15 +92,16 @@ def render_animation(keypoints, keypoints_metadata, poses, skeleton, fps, bitrat
             ax.set_aspect('equal')
         except NotImplementedError:
             ax.set_aspect('auto')
-        ax.set_xticklabels([])
-        ax.set_yticklabels([])
-        ax.set_zticklabels([])
-        ax.dist = 7.5
+        # ax.set_xticklabels([])
+        # ax.set_yticklabels([])
+        # ax.set_zticklabels([])
+        ax.dist = 10
         ax.set_title(title) #, pad=35
         ax_3d.append(ax)
         lines_3d.append([])
         trajectories.append(data[:, 0, [0, 1]])
     poses = list(poses.values())
+    print(poses)
 
     # Decode video
     if input_video_path is None:
@@ -169,9 +170,10 @@ def render_animation(keypoints, keypoints_metadata, poses, skeleton, fps, bitrat
                     lines_3d[n].append(ax.plot([pos[j, 0], pos[j_parent, 0]],
                                                [pos[j, 1], pos[j_parent, 1]],
                                                [pos[j, 2], pos[j_parent, 2]], zdir='z', c=col))
+                    ax.scatter(pos[j,0],pos[j,1],pos[j,2])
+                    ax.text(pos[j,0],pos[j,1],pos[j,2],'%s' % (str(j)), size=10, zorder=1,  color='k')
 
             points = ax_in.scatter(*keypoints[i].T, 10, color=colors_2d, edgecolors='white', zorder=10)
-
             initialized = True
         else:
             image.set_data(all_frames[i])
@@ -202,8 +204,8 @@ def render_animation(keypoints, keypoints_metadata, poses, skeleton, fps, bitrat
         Writer = writers['ffmpeg']
         writer = Writer(fps=fps, metadata={}, bitrate=bitrate)
         anim.save(output, writer=writer)
+        plt.show()
     elif output.endswith('.gif'):
         anim.save(output, dpi=80, writer='imagemagick')
     else:
         raise ValueError('Unsupported output format (only .mp4 and .gif are supported)')
-    plt.close()

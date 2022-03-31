@@ -135,6 +135,7 @@ def main(args):
             boxes.append(cls_boxes)
             segments.append(None)
             keypoints.append(cls_keyps)
+            print(keypoints)
 
         
         # Video resolution

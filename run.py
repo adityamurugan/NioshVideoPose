@@ -742,7 +742,17 @@ if args.render:
     
     if args.viz_export is not None:
         print('Exporting joint positions to', args.viz_export)
+        # print(keypoints_metadata)
         # Predictions are in camera space
+        cam = dataset.cameras()[args.viz_subject][args.viz_camera]
+        for subject in dataset.cameras():
+            if 'orientation' in dataset.cameras()[subject][args.viz_camera]:
+                rot = dataset.cameras()[subject][args.viz_camera]['orientation']
+                break
+        prediction = camera_to_world(prediction, R=dataset.cameras()[subject][args.viz_camera]['orientation'], t=0)
+        # We don't have the trajectory, but at least we can rebase the height
+        prediction[:, :, 2] -= np.min(prediction[:, :, 2])
+        # print(prediction)
         np.save(args.viz_export, prediction)
     
     if args.viz_output is not None:
@@ -768,7 +778,7 @@ if args.render:
             # We don't have the trajectory, but at least we can rebase the height
             prediction[:, :, 2] -= np.min(prediction[:, :, 2])
         
-        anim_output = {'Reconstruction': prediction}
+        anim_output = {'Recreation': prediction}
         if ground_truth is not None and not args.viz_no_ground_truth:
             anim_output['Ground truth'] = ground_truth
         

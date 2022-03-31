@@ -31,6 +31,7 @@ def world_to_camera(X, R, t):
 
     
 def camera_to_world(X, R, t):
+    print(t)
     return wrap(qrot, np.tile(R, (*X.shape[:-1], 1)), X) + t
 
     
